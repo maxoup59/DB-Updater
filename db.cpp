@@ -119,7 +119,7 @@ bool DB::deleteBDD()
 bool DB::updateData()
 {
     bool retour = true;
-    for (int year =2009; year < 2010 ; year++)
+    for (int year = startYear; year < endYear+1 ; year++)
     {
         //changeStatusMessage("Year : " + QString::number(year));
         QString sDataDir("../../../data/"+QString::number(year));
@@ -159,5 +159,11 @@ bool DB::updateData()
         }
     }
     return retour;
+}
+
+void DB::setYear(int start, int end)
+{
+    startYear = start;
+    endYear = end;
 }
 

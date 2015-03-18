@@ -8,6 +8,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->button_deleteTable->setEnabled(false);
     ui->button_initTable->setEnabled(false);
+    ui->button_updateData->setEnabled(false);
+    ui->progressBar->setEnabled(false);
+    ui->spinBox->setEnabled(false);
+    ui->spinBox_2->setEnabled(false);
     ui->button_connect->setEnabled(true);
     statusLabel = new QLabel();
     ui->statusBar->addWidget(statusLabel);
@@ -28,6 +32,9 @@ void MainWindow::on_button_connect_clicked()
     ui->button_deleteTable->setEnabled(true);
     ui->button_initTable->setEnabled(true);
     ui->button_connect->setEnabled(false);
+    ui->spinBox->setEnabled(true);
+    ui->spinBox_2->setEnabled(true);
+    ui->button_updateData->setEnabled(true);
 }
 
 void MainWindow::changeStatusMessage(QString message)
@@ -61,5 +68,6 @@ void MainWindow::on_button_initTable_clicked()
 
 void MainWindow::on_button_updateData_clicked()
 {
+    dataBase->setYear(ui->spinBox->value(),ui->spinBox_2->value());
     dataBase->updateData();
 }

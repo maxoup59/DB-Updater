@@ -12,7 +12,7 @@
 #include <QSqlQueryModel>
 #include <QLabel>
 #include <QDir>
-#include <db.h>
+#include "db.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +24,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void changeProgressBarValue(int value);
     ~MainWindow();
 
 private slots:
@@ -35,10 +36,12 @@ private slots:
 
     void on_button_updateData_clicked();
 
+
 private:
     QLabel* statusLabel;
     Ui::MainWindow *ui;
     void changeStatusMessage(QString message);
+
     DB* dataBase;
 };
 

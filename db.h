@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QDir>
 
+
 class DB
 {
 public:
@@ -23,6 +24,11 @@ public:
     bool deleteBDD();
     bool connectBDD();
     bool updateData();
+    void setYear(int start,int end);
+private :
+    int startYear,endYear;
+private slots:
+    void hey();
 };
 
 #endif // DB_H
