@@ -6,32 +6,27 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->button_deleteTable->setEnabled(false);
-    ui->button_initTable->setEnabled(false);
-    ui->button_updateData->setEnabled(false);
-    ui->progressBar->setEnabled(false);
-    ui->spinBox->setEnabled(false);
-    ui->spinBox_2->setEnabled(false);
-    ui->button_connect->setEnabled(true);
     statusLabel = new QLabel();
     ui->statusBar->addWidget(statusLabel);
     queryExecutor = new ThreadIntegration();
+    connect(queryExecutor,SIGNAL(lineInserted(int)),this,SLOT(onLineInserted(int)));
+    connect(queryExecutor,SIGNAL(yearStarted(int)),this,SLOT(onYearStarted(int)));
+    connect(queryExecutor,SIGNAL(threadStoped()),this,SLOT(onThreadStoped()));
+}
+
+void MainWindow::onLineInserted(int value)
+{
+    ui->progressBar->setValue(value);
+}
+
+void MainWindow::onYearStarted(int value)
+{
+    ui->label_year->setText(QString::number(value));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::on_button_connect_clicked()
-{
-
-    ui->button_deleteTable->setEnabled(true);
-    ui->button_initTable->setEnabled(true);
-    ui->button_connect->setEnabled(false);
-    ui->spinBox->setEnabled(true);
-    ui->spinBox_2->setEnabled(true);
-    ui->button_updateData->setEnabled(true);
 }
 
 void MainWindow::changeStatusMessage(QString message)
@@ -51,7 +46,6 @@ void MainWindow::on_button_deleteTable_clicked()
     {
         changeStatusMessage("Error can't delete BDD");
     }*/
-
 }
 
 void MainWindow::on_button_initTable_clicked()
@@ -72,4 +66,16 @@ void MainWindow::on_button_updateData_clicked()
     queryExecutor->setChoice(0);
     queryExecutor->setDate(ui->spinBox->value(),ui->spinBox_2->value());
     queryExecutor->start();
+}
+
+void MainWindow::on_button_stopUpdate_clicked()
+{
+    queryExecutor->setFinDemandee(true);
+}
+
+void MainWindow::onThreadStoped()
+{
+    changeStatusMessage("Thread stoped");
+    ui->progressBar->setValue(0);
+    ui->label_year->setText("Year");
 }

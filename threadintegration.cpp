@@ -4,6 +4,7 @@
 ThreadIntegration::ThreadIntegration()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
+    finDemandee = false;
 }
 
 ThreadIntegration::~ThreadIntegration()
@@ -14,6 +15,11 @@ void ThreadIntegration::setDate(int pStartYear, int pEndYear)
 {
     startYear=pStartYear;
     endYear=pEndYear;
+}
+
+void ThreadIntegration::setFinDemandee(bool pFinDemande)
+{
+    finDemandee=pFinDemande;
 }
 
 void ThreadIntegration::setChoice(int pChoice)
@@ -122,40 +128,52 @@ void ThreadIntegration::run()
 
 void ThreadIntegration::update()
 {
-    bool retour = true;
+    qDebug() << "update()";
     for (int year = startYear; year < endYear; year++)
     {
+
+        emit yearStarted(year);
         QString sDataDir("../../../data/"+QString::number(year));
         QDir dataDir(sDataDir);
         QStringList listfiles = dataDir.entryList();
         int nbOfFiles = listfiles.length() - 2;
         for (int file = 2 ; file < listfiles.length();file++)
         {
-            QFile f(sDataDir+"/"+listfiles[file]);
-            qDebug() << listfiles[file];
-            if(f.open (QIODevice::ReadOnly))
+            if(!finDemandee)
             {
-                QTextStream ts (&f);
-                while(!ts.atEnd()){
-                    QStringList line = ts.readLine().split(';');
-                    QString request = "INSERT INTO firsttest VALUES(";
-                    for (int i = 0 ; i < line.length() ; i ++)
-                    {
-                        request += "'";
-                        line[i].replace("'","");
-                        request += line[i];
-                        request += "'";
-                        request += ",";
+
+                QFile f(sDataDir+"/"+listfiles[file]);
+                qDebug() << listfiles[file];
+                if(f.open (QIODevice::ReadOnly))
+                {
+                    QTextStream ts (&f);
+                    while(!ts.atEnd()){
+                        QStringList line = ts.readLine().split(';');
+                        QString request = "INSERT INTO firsttest VALUES(";
+                        for (int i = 0 ; i < line.length() ; i ++)
+                        {
+                            request += "'";
+                            line[i].replace("'","");
+                            request += line[i];
+                            request += "'";
+                            request += ",";
+                        }
+                        request.remove(request.lastIndexOf(",")-3,4);
+                        request+= ");";
+                        QSqlQuery createDB;
+                        if(!createDB.exec(request))
+                        {
+                            //retour = false;
+                        }
                     }
-                    request.remove(request.lastIndexOf(",")-3,4);
-                    request+= ");";
-                    QSqlQuery createDB;
-                    if(!createDB.exec(request))
-                    {
-                        retour = false;
-                    }
+                    f.close ();
                 }
-                f.close ();
+                emit lineInserted(file-2);
+            }
+            else {
+                qDebug() << "Thread Stoped";
+                emit threadStoped();
+                break;
             }
         }
     }

@@ -19,14 +19,19 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_button_connect_clicked();
-
     void on_button_deleteTable_clicked();
 
     void on_button_initTable_clicked();
 
     void on_button_updateData_clicked();
 
+    void onLineInserted(int value);
+
+    void onYearStarted(int value);
+
+    void on_button_stopUpdate_clicked();
+
+    void onThreadStoped();
 
 private:
     QLabel* statusLabel;
