@@ -12,6 +12,7 @@
 #include <QSqlQueryModel>
 #include <QLabel>
 #include <QDir>
+#include "threadintegration.h"
 
 
 class DB
@@ -27,8 +28,7 @@ public:
     void setYear(int start,int end);
 private :
     int startYear,endYear;
-private slots:
-    void hey();
+    ThreadIntegration* queryExecutor;
 };
 
 #endif // DB_H

@@ -18,10 +18,12 @@ DEPLOYMENT += test
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    db.cpp
+    db.cpp \
+    threadintegration.cpp
 
 HEADERS  += mainwindow.h \
-    db.h
+    db.h \
+    threadintegration.h
 
 FORMS    += mainwindow.ui
 
