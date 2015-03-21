@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     statusLabel = new QLabel();
     ui->statusBar->addWidget(statusLabel);
     dataBase = new DB();
+    queryExecutor = new ThreadIntegration();
 }
 
 MainWindow::~MainWindow()
@@ -44,30 +45,35 @@ void MainWindow::changeStatusMessage(QString message)
 
 void MainWindow::on_button_deleteTable_clicked()
 {
-    if(dataBase->deleteBDD())
+    queryExecutor->setChoice(1);
+    queryExecutor->start();
+    /*if(dataBase->deleteBDD())
     {
         changeStatusMessage("BDD deleted");
     }
     else
     {
         changeStatusMessage("Error can't delete BDD");
-    }
+    }*/
 
 }
 
 void MainWindow::on_button_initTable_clicked()
 {
-    if(dataBase->initBDD())
+    queryExecutor->setChoice(2);
+    queryExecutor->start();
+    /*if(dataBase->initBDD())
     {
         changeStatusMessage("BDD initialized");
     }
     else {
         changeStatusMessage("Error can't init BDD");
-    }
+    }*/
 }
 
 void MainWindow::on_button_updateData_clicked()
 {
-    dataBase->setYear(ui->spinBox->value(),ui->spinBox_2->value());
-    dataBase->updateData();
+    queryExecutor->setChoice(0);
+    queryExecutor->setDate(ui->spinBox->value(),ui->spinBox_2->value());
+    queryExecutor->start();
 }

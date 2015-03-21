@@ -4,13 +4,19 @@
 
 ThreadIntegration::ThreadIntegration()
 {
-
+    db = QSqlDatabase::addDatabase("QSQLITE");
 }
 
 ThreadIntegration::~ThreadIntegration()
 {
 
 }
+void ThreadIntegration::setDate(int pStartYear, int pEndYear)
+{
+    startYear=pStartYear;
+    endYear=pEndYear;
+}
+
 void ThreadIntegration::setChoice(int pChoice)
 {
     choice = pChoice;
@@ -94,7 +100,7 @@ void ThreadIntegration::remove()
 
 void ThreadIntegration::run()
 {
-    db = QSqlDatabase::addDatabase("QSQLITE");
+
     db.setDatabaseName("test.dev.db");
     if(db.open())
         qDebug() << "ok";
@@ -119,7 +125,7 @@ void ThreadIntegration::run()
 void ThreadIntegration::update()
 {
     bool retour = true;
-    for (int year = 2009; year < 2015 ; year++)
+    for (int year = startYear; year < endYear; year++)
     {
         QString sDataDir("../../../data/"+QString::number(year));
         QDir dataDir(sDataDir);

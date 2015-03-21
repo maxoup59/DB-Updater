@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QDir>
 #include "db.h"
+#include "threadintegration.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,7 +42,7 @@ private:
     QLabel* statusLabel;
     Ui::MainWindow *ui;
     void changeStatusMessage(QString message);
-
+    ThreadIntegration* queryExecutor;
     DB* dataBase;
 };
 
