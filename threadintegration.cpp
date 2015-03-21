@@ -1,6 +1,5 @@
 #include "threadintegration.h"
-#include <QDir>
-#include <QFile>
+
 
 ThreadIntegration::ThreadIntegration()
 {
@@ -106,7 +105,6 @@ void ThreadIntegration::run()
         qDebug() << "ok";
     if(db.isValid())
         qDebug() << "valid";
-    bool retour = true;
     switch(choice)
     {
     case 0:

@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QDir>
+#include <QFile>
 
 class ThreadIntegration : public QThread
 {

@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->button_connect->setEnabled(true);
     statusLabel = new QLabel();
     ui->statusBar->addWidget(statusLabel);
-    dataBase = new DB();
     queryExecutor = new ThreadIntegration();
 }
 
@@ -26,10 +25,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_button_connect_clicked()
 {
-    if(dataBase->connectBDD())
-    {
-        changeStatusMessage("Connected to BDD");
-    }
+
     ui->button_deleteTable->setEnabled(true);
     ui->button_initTable->setEnabled(true);
     ui->button_connect->setEnabled(false);
