@@ -49,8 +49,19 @@ bool ThreadIntegration::checkTable()
         emit haveSomethingToSay("Can't check if the table already exist");
     }
 }
-
 void ThreadIntegration::init()
+{
+    if(checkTable())
+    {
+        checkTableFinished("1");
+    }
+    else
+    {
+        checkTableFinished("0");
+    }
+}
+
+void ThreadIntegration::create()
 {
     if(!checkTable())
     {
@@ -105,7 +116,7 @@ void ThreadIntegration::init()
     }
     else
     {
-        emit haveSomethingToSay("initialization : PONEYDB already exist");
+        emit haveSomethingToSay("initalization : PONEYDB already exist");
     }
 }
 
@@ -141,13 +152,16 @@ void ThreadIntegration::run()
         switch(choice)
         {
         case 0:
-            update();
+            init();
             break;
         case 1:
-            remove();
+            update();
             break;
         case 2:
-            init();
+            remove();
+            break;
+        case 3:
+            create();
         default: break;
         }
         db.close();
@@ -158,13 +172,13 @@ void ThreadIntegration::update()
 {
     if(checkTable())
     {
-        for (int year = startYear; year < endYear; year++)
+        for (int year = startYear; year < endYear+1; year++)
         {
-            emit yearStarted(year);
             QString sDataDir("../../../data/"+QString::number(year));
             QDir dataDir(sDataDir);
             QStringList listfiles = dataDir.entryList();
             int nbOfFiles = listfiles.length() - 2;
+            emit yearStarted(QString::number(year) +"+"+QString::number(nbOfFiles)) ;
             for (int file = 2 ; file < listfiles.length();file++)
             {
                 if(!finDemandee)
@@ -191,7 +205,7 @@ void ThreadIntegration::update()
                             QSqlQuery createDB;
                             if(!createDB.exec(request))
                             {
-                                emit haveSomethingToSay("update :  can't insert this line");
+                               // emit haveSomethingToSay("update :  can't insert this line");
                             }
                         }
                         f.close ();
@@ -200,13 +214,14 @@ void ThreadIntegration::update()
                 }
                 else {
                     emit threadStoped();
+                    finDemandee = false;
                     break;
                 }
             }
         }
     }
     else {
-        emit haveSomethingToSay("update : can't update data -> click on init");
+        emit haveSomethingToSay("update : can't update data -> click on create");
     }
 }
 

@@ -27,11 +27,11 @@ private slots:
 
     void onLineInserted(int value);
 
-    void onYearStarted(int value);
-
-    void on_button_stopUpdate_clicked();
+    void onYearStarted(QString value);
 
     void onThreadStoped();
+
+    void onCheckTableFinished(QString value);
 
     void onHaveSomethingToSay(QString something);
 

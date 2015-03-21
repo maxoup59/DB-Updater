@@ -23,14 +23,16 @@ public:
     bool checkTable();
 signals:
     void lineInserted(int value);
-    void yearStarted(int value);
+    void yearStarted(QString value);
     void threadStoped();
     void haveSomethingToSay(QString something);
+    void checkTableFinished(QString);
 private :
     QSqlDatabase db;
     int choice;
-    void init();
+    void create();
     void remove();
+    void init();
     int startYear,endYear;
     bool finDemandee;
 
