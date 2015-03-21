@@ -33,6 +33,8 @@ private slots:
 
     void onThreadStoped();
 
+    void onHaveSomethingToSay(QString something);
+
 private:
     QLabel* statusLabel;
     Ui::MainWindow *ui;

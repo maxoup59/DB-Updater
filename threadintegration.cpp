@@ -26,156 +26,187 @@ void ThreadIntegration::setChoice(int pChoice)
 {
     choice = pChoice;
 }
-void ThreadIntegration::init()
+
+bool ThreadIntegration::checkTable()
 {
-    QFile f("20150101.csv");
-    if(f.open (QIODevice::ReadOnly))
+    QString request = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='PoneyDB'";
+    QSqlQuery createDB;
+    if(createDB.exec(request))
     {
-        QTextStream ts (&f);
-        QStringList line = ts.readLine().split(';');
-        QString request = "CREATE TABLE firsttest(";
-        int nbMusique = 0;
-        for (int i = 0 ; i < line.length() ; i ++)
+        while(createDB.next())
         {
-            if (line[i].toUpper() == "MUSIQUE")
+            if(createDB.value(0).toString() == "1")
             {
-                QString temp;
-                switch(nbMusique)
-                {
-                case 0 :
-                    temp = "Poney";
-                    break;
-                case 1 :
-                    temp = "Jockey";
-                    break;
-                case 2 :
-                    temp = "Trainer";
-                    break;
-                default:
-                    break;
-                }
-                line[i] = line[i] + temp;
-                nbMusique++;
+                return true;
             }
-            line[i].replace(" ","");
-            line[i].replace("/","");
-            request+= line[i];
-            request+= " char(255)";
-            request+= ",";
-        }
-        request.remove(request.lastIndexOf(","),1);
-        request+= ");";
-        f.close ();
-        QSqlQuery createDB;
-        if(createDB.exec(request))
-        {
-            qDebug() << "BDD crée";
-        }
-        else
-        {
-            qDebug() << "Erreur lors de la création";
+            else {
+                return false;
+            }
         }
     }
+    else
+    {
+        emit haveSomethingToSay("Can't check if the table already exist");
+    }
+}
 
-    else {
-        qDebug() << "can't init BDD : not open";
+void ThreadIntegration::init()
+{
+    if(!checkTable())
+    {
+        QFile f("structure.csv");
+        if(f.open (QIODevice::ReadOnly))
+        {
+            QTextStream ts (&f);
+            QStringList line = ts.readLine().split(';');
+            QString request = "CREATE TABLE PoneyDB(";
+            int nbMusique = 0;
+            for (int i = 0 ; i < line.length() ; i ++)
+            {
+                if (line[i].toUpper() == "MUSIQUE")
+                {
+                    QString temp;
+                    switch(nbMusique)
+                    {
+                    case 0 :
+                        temp = "Poney";
+                        break;
+                    case 1 :
+                        temp = "Jockey";
+                        break;
+                    case 2 :
+                        temp = "Trainer";
+                        break;
+                    default:
+                        break;
+                    }
+                    line[i] = line[i] + temp;
+                    nbMusique++;
+                }
+                line[i].replace(" ","");
+                line[i].replace("/","");
+                request+= line[i];
+                request+= " char(255)";
+                request+= ",";
+            }
+            request.remove(request.lastIndexOf(","),1);
+            request+= ");";
+            f.close ();
+            QSqlQuery createDB;
+            if(createDB.exec(request))
+            {
+                emit haveSomethingToSay("DB Poney created");
+            }
+            else
+            {
+                emit haveSomethingToSay("initialization : Can't create DB");
+            }
+        }
+    }
+    else
+    {
+        emit haveSomethingToSay("initialization : PONEYDB already exist");
     }
 }
 
 void ThreadIntegration::remove()
 {
-    if(db.isOpen())
+    if(checkTable())
     {
         QSqlQuery deleteBDD;
-        if(deleteBDD.exec("DROP TABLE firsttest"))
+        if(deleteBDD.exec("DROP TABLE PoneyDB"))
         {
-            qDebug() << "BDD supprimé";
-            //retour = true;
+            emit haveSomethingToSay("DB deleted");
         }
         else
         {
-            qDebug() << "Erreur lors de la suppression";
+            emit haveSomethingToSay("remove : Can't remove DB");
         }
     }
     else
     {
-        qDebug() << "can't delete BDD : not open";
+        emit haveSomethingToSay("remove : PONEYDB doesn't exist ,can't remove");
     }
 }
 
 void ThreadIntegration::run()
 {
-
     db.setDatabaseName("test.dev.db");
-    if(db.open())
-        qDebug() << "ok";
-    if(db.isValid())
-        qDebug() << "valid";
-    switch(choice)
+    if(!db.open() || !db.isValid())
     {
-    case 0:
-        update();
-        break;
-    case 1:
-        remove();
-        break;
-    case 2:
-        init();
-    default: break;
+        emit haveSomethingToSay("run : can't open DB");
     }
-    db.close();
+    else
+    {
+        switch(choice)
+        {
+        case 0:
+            update();
+            break;
+        case 1:
+            remove();
+            break;
+        case 2:
+            init();
+        default: break;
+        }
+        db.close();
+    }
 }
 
 void ThreadIntegration::update()
 {
-    qDebug() << "update()";
-    for (int year = startYear; year < endYear; year++)
+    if(checkTable())
     {
-
-        emit yearStarted(year);
-        QString sDataDir("../../../data/"+QString::number(year));
-        QDir dataDir(sDataDir);
-        QStringList listfiles = dataDir.entryList();
-        int nbOfFiles = listfiles.length() - 2;
-        for (int file = 2 ; file < listfiles.length();file++)
+        for (int year = startYear; year < endYear; year++)
         {
-            if(!finDemandee)
+            emit yearStarted(year);
+            QString sDataDir("../../../data/"+QString::number(year));
+            QDir dataDir(sDataDir);
+            QStringList listfiles = dataDir.entryList();
+            int nbOfFiles = listfiles.length() - 2;
+            for (int file = 2 ; file < listfiles.length();file++)
             {
-
-                QFile f(sDataDir+"/"+listfiles[file]);
-                qDebug() << listfiles[file];
-                if(f.open (QIODevice::ReadOnly))
+                if(!finDemandee)
                 {
-                    QTextStream ts (&f);
-                    while(!ts.atEnd()){
-                        QStringList line = ts.readLine().split(';');
-                        QString request = "INSERT INTO firsttest VALUES(";
-                        for (int i = 0 ; i < line.length() ; i ++)
-                        {
-                            request += "'";
-                            line[i].replace("'","");
-                            request += line[i];
-                            request += "'";
-                            request += ",";
+
+                    QFile f(sDataDir+"/"+listfiles[file]);
+                    qDebug() << listfiles[file];
+                    if(f.open (QIODevice::ReadOnly))
+                    {
+                        QTextStream ts (&f);
+                        while(!ts.atEnd()){
+                            QStringList line = ts.readLine().split(';');
+                            QString request = "INSERT INTO PoneyDB VALUES(";
+                            for (int i = 0 ; i < line.length() ; i ++)
+                            {
+                                request += "'";
+                                line[i].replace("'","");
+                                request += line[i];
+                                request += "'";
+                                request += ",";
+                            }
+                            request.remove(request.lastIndexOf(",")-3,4);
+                            request+= ");";
+                            QSqlQuery createDB;
+                            if(!createDB.exec(request))
+                            {
+                                emit haveSomethingToSay("update :  can't insert this line");
+                            }
                         }
-                        request.remove(request.lastIndexOf(",")-3,4);
-                        request+= ");";
-                        QSqlQuery createDB;
-                        if(!createDB.exec(request))
-                        {
-                            //retour = false;
-                        }
+                        f.close ();
                     }
-                    f.close ();
+                    emit lineInserted(file-2);
                 }
-                emit lineInserted(file-2);
-            }
-            else {
-                qDebug() << "Thread Stoped";
-                emit threadStoped();
-                break;
+                else {
+                    emit threadStoped();
+                    break;
+                }
             }
         }
+    }
+    else {
+        emit haveSomethingToSay("update : can't update data -> click on init");
     }
 }
 

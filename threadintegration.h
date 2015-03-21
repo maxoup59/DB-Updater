@@ -20,10 +20,12 @@ public:
     void setChoice(int pChoice);
     void setDate(int pStartyear,int pEndyear);
     void setFinDemandee(bool pFinDemande);
+    bool checkTable();
 signals:
     void lineInserted(int value);
     void yearStarted(int value);
     void threadStoped();
+    void haveSomethingToSay(QString something);
 private :
     QSqlDatabase db;
     int choice;
@@ -31,6 +33,7 @@ private :
     void remove();
     int startYear,endYear;
     bool finDemandee;
+
 };
 
 #endif // THREADINTEGRATION_H

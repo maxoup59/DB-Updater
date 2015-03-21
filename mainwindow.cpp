@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(queryExecutor,SIGNAL(lineInserted(int)),this,SLOT(onLineInserted(int)));
     connect(queryExecutor,SIGNAL(yearStarted(int)),this,SLOT(onYearStarted(int)));
     connect(queryExecutor,SIGNAL(threadStoped()),this,SLOT(onThreadStoped()));
+    connect(queryExecutor,SIGNAL(haveSomethingToSay(QString)),this,SLOT(onHaveSomethingToSay(QString)));
 }
 
 void MainWindow::onLineInserted(int value)
@@ -38,27 +39,12 @@ void MainWindow::on_button_deleteTable_clicked()
 {
     queryExecutor->setChoice(1);
     queryExecutor->start();
-    /*if(dataBase->deleteBDD())
-    {
-        changeStatusMessage("BDD deleted");
-    }
-    else
-    {
-        changeStatusMessage("Error can't delete BDD");
-    }*/
 }
 
 void MainWindow::on_button_initTable_clicked()
 {
     queryExecutor->setChoice(2);
     queryExecutor->start();
-    /*if(dataBase->initBDD())
-    {
-        changeStatusMessage("BDD initialized");
-    }
-    else {
-        changeStatusMessage("Error can't init BDD");
-    }*/
 }
 
 void MainWindow::on_button_updateData_clicked()
@@ -75,7 +61,12 @@ void MainWindow::on_button_stopUpdate_clicked()
 
 void MainWindow::onThreadStoped()
 {
-    changeStatusMessage("Thread stoped");
+    changeStatusMessage("Intégration stoped");
     ui->progressBar->setValue(0);
     ui->label_year->setText("Year");
+}
+
+void MainWindow::onHaveSomethingToSay(QString something)
+{
+    changeStatusMessage(something);
 }
