@@ -9,11 +9,16 @@ MainWindow::MainWindow(QWidget *parent) :
     statusLabel = new QLabel();
     ui->statusBar->addWidget(statusLabel);
     queryExecutor = new ThreadIntegration();
+
+
+
     connect(queryExecutor,SIGNAL(lineInserted(int)),this,SLOT(onLineInserted(int)));
     connect(queryExecutor,SIGNAL(yearStarted(QString)),this,SLOT(onYearStarted(QString)));
     connect(queryExecutor,SIGNAL(threadStoped()),this,SLOT(onThreadStoped()));
     connect(queryExecutor,SIGNAL(haveSomethingToSay(QString)),this,SLOT(onHaveSomethingToSay(QString)));
     connect(queryExecutor,SIGNAL(checkTableFinished(QString)),this,SLOT(onCheckTableFinished(QString)));
+
+
     queryExecutor->setChoice(0);
     queryExecutor->start();
 }
@@ -46,7 +51,7 @@ void MainWindow::on_button_deleteTable_clicked()
     queryExecutor->start();
     ui->button_deleteTable->setEnabled(false);
     ui->button_initTable->setEnabled(true);
-        ui->button_updateData->setEnabled(false);
+    ui->button_updateData->setEnabled(false);
 }
 
 void MainWindow::on_button_initTable_clicked()

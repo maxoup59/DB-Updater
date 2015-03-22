@@ -35,11 +35,13 @@ private slots:
 
     void onHaveSomethingToSay(QString something);
 
+
 private:
     QLabel* statusLabel;
     Ui::MainWindow *ui;
     void changeStatusMessage(QString message);
     ThreadIntegration* queryExecutor;
+
 };
 
 #endif // MAINWINDOW_H
