@@ -41,7 +41,6 @@ private:
     Ui::MainWindow *ui;
     void changeStatusMessage(QString message);
     ThreadIntegration* queryExecutor;
-
 };
 
 #endif // MAINWINDOW_H

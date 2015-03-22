@@ -9,16 +9,11 @@ MainWindow::MainWindow(QWidget *parent) :
     statusLabel = new QLabel();
     ui->statusBar->addWidget(statusLabel);
     queryExecutor = new ThreadIntegration();
-
-
-
     connect(queryExecutor,SIGNAL(lineInserted(int)),this,SLOT(onLineInserted(int)));
     connect(queryExecutor,SIGNAL(yearStarted(QString)),this,SLOT(onYearStarted(QString)));
     connect(queryExecutor,SIGNAL(threadStoped()),this,SLOT(onThreadStoped()));
     connect(queryExecutor,SIGNAL(haveSomethingToSay(QString)),this,SLOT(onHaveSomethingToSay(QString)));
     connect(queryExecutor,SIGNAL(checkTableFinished(QString)),this,SLOT(onCheckTableFinished(QString)));
-
-
     queryExecutor->setChoice(0);
     queryExecutor->start();
 }
